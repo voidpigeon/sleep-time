@@ -18,10 +18,18 @@ end
 listen('/dev/input/mouse0')
 listen('/dev/input/event0')
 
+def get_file(name)
+	File.join(__dir__, name)
+end
+
 loop do
 	sleep 1
 	if !$recorded && Time.new - $last_action > seconds_cutoff
 		$recorded = true
-		puts $last_action.strftime('%H:%M:%S')
+		str = $last_action.strftime('%H:%M:%S') 
+		puts str
+		File.open(get_file('log.txt'), 'a') do |file|
+			file.puts str + '\n'
+		end
 	end
 end
