@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 def parse_config(str)
 	params = [:seconds_cutoff]
 	result = {}
