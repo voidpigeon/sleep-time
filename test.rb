@@ -4,27 +4,32 @@ if ENV['USER'] != 'root'
 	abort 'must run as root'
 end
 
+def get_file(name)
+	File.join(__dir__, name)
+end
+
+log_file = get_file('log.txt')
+
+if !File.file?(log_file)
+	File.write(log_file, '')
+end
+
 def parse_config(str)
-	params = [:seconds_cutoff]
+	params = [:seconds_cutoff, :time_format]
 	result = {}
 	for param in params
-		regex = /^\s*#{param.to_s}\s*=\s*(\d+)\s*$/
+		regex = /^#{param.to_s}=(.*)$/
 		if str[regex]
-			result[param] = $1.to_i
+			result[param] = $1
 		end
 	end
 	result
 end
 
-def get_file(name)
-	File.join(__dir__, name)
-end
-
 config = parse_config(File.read(get_file("config.conf")))
 
 $last_action = Time.new # who needs thread safety
-$prev_last_action = $last_action
-$recorded = true
+$recorded = false
 
 def listen(path)
 	Thread.new do
@@ -37,15 +42,15 @@ def listen(path)
 	end
 end
 
-listen('/dev/input/mouse0')
-listen('/dev/input/event0')
+listen('/dev/input/mouse0') # TODO: add option to disable mouse
+listen('/dev/input/event0') # TODO: check how cross-platform this is
 
 loop do
 	sleep 1
-	if !$recorded && Time.new - $last_action > config[:seconds_cutoff]
+	if !$recorded && Time.new - $last_action > eval(config[:seconds_cutoff])
 		$recorded = true
-		str = $last_action.strftime('%H:%M:%S') 
-		File.open(get_file('log.txt'), 'a') do |file|
+		str = $last_action.strftime(config[:time_format])
+		File.open(log_file, 'a') do |file|
 			file.puts str
 		end
 	end
