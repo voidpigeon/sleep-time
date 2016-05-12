@@ -1,5 +1,9 @@
 #!/usr/bin/env ruby
 
+if ENV['USER'] != 'root'
+	abort 'must run as root'
+end
+
 def parse_config(str)
 	params = [:seconds_cutoff]
 	result = {}
@@ -41,7 +45,6 @@ loop do
 	if !$recorded && Time.new - $last_action > config[:seconds_cutoff]
 		$recorded = true
 		str = $last_action.strftime('%H:%M:%S') 
-		puts str
 		File.open(get_file('log.txt'), 'a') do |file|
 			file.puts str
 		end
