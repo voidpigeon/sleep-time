@@ -1,3 +1,3 @@
 #!/bin/bash
 
-sudo ruby test.rb &
+sudo ruby sleep_time.rb &
