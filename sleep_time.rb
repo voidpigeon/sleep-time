@@ -42,7 +42,7 @@ def listen(path)
 	end
 end
 
-listen('/dev/input/mouse0') # TODO: add option to disable mouse
+listen('/dev/input/mice') # TODO: add option to disable mouse
 listen('/dev/input/event0') # TODO: check how cross-platform this is
 
 loop do
