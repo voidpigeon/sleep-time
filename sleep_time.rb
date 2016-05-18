@@ -15,7 +15,7 @@ if !File.file?(log_file)
 end
 
 def parse_config(str)
-	params = [:seconds_cutoff, :time_format]
+	params = [:seconds_cutoff, :time_format, :check_mouse]
 	result = {}
 	for param in params
 		regex = /^#{param.to_s}=(.*)$/
@@ -42,7 +42,9 @@ def listen(path)
 	end
 end
 
-listen('/dev/input/mice') # TODO: add option to disable mouse
+if config[:check_mouse].upcase != "NO"
+	listen('/dev/input/mice')
+end
 listen('/dev/input/event0') # TODO: check how cross-platform this is
 
 loop do
